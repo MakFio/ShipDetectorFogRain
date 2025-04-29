@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Результаты анализа</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            color: white;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+        <span>Обработка файла...</span>
+    </div>
+
+    <div class="container">
+        <h1>Обнаружено судов: <span class="ship-count">{{ count }}</span></h1>
+
+        <div class="media-comparison">
+    {% if file_type == 'video' %}
+        <!-- Исходное видео -->
+        <div class="media-group">
+            <h3>Исходное видео</h3>
+            <video controls class="media-player">
+                <source src="{{ url_for('serve_upload', filename=original_filename) }}"
+                        type="video/{{ original_ext }}">
+                Ваш браузер не поддерживает видео
+            </video>
+        </div>
+
+        <!-- Блок с результатом -->
+        <div class="media-group">
+            <h3>Результат обработки</h3>
+            <div class="download-section">
+                <p>Видео успешно обработано!</p>
+                <p>Обнаружено судов: {{ count }}</p>
+                <a href="{{ url_for('serve_export', filename=processed_filename) }}"
+                   class="download-button" download>
+                   Скачать обработанное видео
+                </a>
+            </div>
+        </div>
+
+    {% elif file_type == 'gif' %}
+        <!-- Обработка GIF -->
+        <div class="media-group">
+            <h3>Исходный GIF</h3>
+            <img src="/uploads/{{ original_filename }}" class="media-image">
+        </div>
+        <div class="media-group">
+            <h3>Результат обработки</h3>
+            <img src="/exports/{{ processed_filename }}" class="media-image">
+        </div>
+
+    {% else %}
+        <!-- Обработка изображений -->
+        <div class="media-group">
+            <h3>Исходное изображение</h3>
+            <img src="/uploads/{{ original_filename }}" class="media-image">
+        </div>
+        <div class="media-group">
+            <h3>Результат обработки</h3>
+            <img src="/exports/{{ processed_filename }}" class="media-image">
+        </div>
+    {% endif %}
+</div>
+
+        <div class="navigation">
+            <a href="/" class="report-button">Новый анализ</a>
+            <a href="/report" class="report-button">Скачать отчет</a>
+        </div>
+    </div>
+
+    <script>
+        // Управление видео прогрессом
+        document.querySelectorAll('video').forEach(video => {
+            video.addEventListener('timeupdate', () => {
+                const progress = (video.currentTime / video.duration) * 100;
+                video.closest('.media-group').querySelector('progress').value = progress;
+            });
+        });
+
+        // Перезапуск GIF анимации
+        document.querySelectorAll('.media-image').forEach(img => {
+            if(img.src.toLowerCase().endsWith('.gif')) {
+                const restartGif = () => {
+                    const src = img.src;
+                    img.src = '';
+                    setTimeout(() => img.src = src, 50);
+                };
+                img.addEventListener('click', restartGif);
+                restartGif();
+            }
+        });
+
+        // Показ загрузки при отправке формы
+        document.querySelector('form')?.addEventListener('submit', () => {
+            document.getElementById('loading').style.display = 'flex';
+        });
+    </script>
+</body>
+</html>

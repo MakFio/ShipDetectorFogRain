@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Мониторинг судов в порту</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .camera-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .camera-container {
+            position: relative;
+            width: 640px;
+            height: 480px;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        #webcam {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        #detection-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .detection-info {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Мониторинг судов в порту</h1>
+
+        <div class="upload-section">
+            <form action="/process" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" id="file-input" accept="image/*,video/*" required>
+                <label for="file-input" class="file-label">
+                    <span id="file-name">Выберите файл (JPG, PNG, GIF, MP4)</span>
+                    <div class="file-button">Обзор</div>
+                </label>
+                <button type="submit" class="submit-button">Анализировать</button>
+            </form>
+        </div>
+
+        <div class="camera-section">
+            <h2>Онлайн детекция судов</h2>
+            <div class="camera-wrapper">
+                <div class="camera-container">
+                    <video id="webcam"></video>
+                    <canvas id="detection-canvas"></canvas>
+                    <div class="detection-info" id="detection-info">Камера не активирована</div>
+                </div>
+            </div>
+            <button id="start-webcam" class="webcam-button">Запустить детекцию</button>
+        </div>
+
+        <div class="report-section">
+            <a href="/report" class="report-button">Скачать отчет</a>
+        </div>
+    </div>
+
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <span>Обработка...</span>
+        </div>
+    </div>
+
+    <script src="/static/webcam.js"></script>
+    <script src="/static/file-upload.js"></script>
+</body>
+</html>
