@@ -8,7 +8,7 @@ import imageio
 class ShipDetector:
     def __init__(self):
         self.model = YOLO('yolov8n.pt')
-        self.ship_class_id = 8  # boat in COCO
+        self.ship_class_id = 8  # boat в COCO
         self.ship_class_name = "ship"  # Добавляем имя класса
 
     def process_image(self, input_path, output_path):

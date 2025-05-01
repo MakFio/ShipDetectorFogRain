@@ -3,7 +3,7 @@ import traceback
 import uuid
 import cv2
 import numpy as np
-from flask import Flask, render_template, request, send_from_directory, send_file, jsonify, make_response
+from flask import Flask, render_template, request, send_from_directory, send_file, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import pandas as pd
 from model import ShipDetector
