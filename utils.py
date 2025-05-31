@@ -1,5 +1,5 @@
 # test.py
-from model import ShipDetector
+from model_coco import ShipDetector
 
 def test_detector():
     detector = ShipDetector()

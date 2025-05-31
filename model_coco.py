@@ -5,9 +5,9 @@ import imageio
 
 
 
-class ShipDetector:
+class CocoDetector:
     def __init__(self):
-        self.model = YOLO('yolov8n.pt')
+        self.model = YOLO('yolo11n.pt')
         self.ship_class_id = 8  # boat в COCO
         self.ship_class_name = "ship"  # Добавляем имя класса
 
@@ -26,7 +26,7 @@ class ShipDetector:
         width = int(cap.get(3))
         height = int(cap.get(4))
 
-        # Исправляем кодек и расширение
+        # Кодек и расширение
         output_path = output_path.rsplit('.', 1)[0] + '.mp4'
         writer = cv2.VideoWriter(
             output_path,
@@ -42,7 +42,7 @@ class ShipDetector:
             if not ret:
                 break
 
-            # Получаем результаты с аннотациями
+            # Результаты с аннотациями
             results = self.model.predict(
                 source=frame,
                 classes=[self.ship_class_id],

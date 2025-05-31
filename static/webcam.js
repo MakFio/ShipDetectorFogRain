@@ -6,16 +6,20 @@ class WebcamDetector {
         this.infoElement = document.getElementById('detection-info');
         this.stream = null;
         this.isProcessing = false;
-        this.frameQueue = [];
+        this.lastProcessTime = 0;
+        this.targetFPS = 3;
+        this.frameInterval = 1000 / this.targetFPS;
+        this.fps = 0;
+        this.fpsCounter = 0;
+        this.lastFpsUpdate = 0;
 
-        // Инициализация размеров
         this.canvas.width = 640;
         this.canvas.height = 480;
         this.setupEventListeners();
     }
 
     setupEventListeners() {
-        document.getElementById('start-webcam').addEventListener('click', () => {
+        document.getElementById('start-webcam').addEventListener('click', (event) => {
             if (this.stream) {
                 this.stopDetection();
                 event.target.textContent = 'Запустить детекцию';
@@ -38,27 +42,51 @@ class WebcamDetector {
 
             this.video.srcObject = this.stream;
             this.video.play();
+            this.lastProcessTime = 0;
             this.processFrameLoop();
             this.infoElement.textContent = 'Детекция активна...';
+            this.infoElement.style.color = '#000000';
         } catch (err) {
             console.error('Camera error:', err);
             this.infoElement.textContent = 'Ошибка доступа к камере';
+            this.infoElement.style.color = '#FF0000';
         }
     }
 
     async processFrameLoop() {
         const processFrame = async () => {
-            if (!this.stream || this.isProcessing) return;
+            if (!this.stream) return;
 
-            this.isProcessing = true;
-            try {
-                await this.processSingleFrame();
-            } catch (err) {
-                console.error('Frame processing error:', err);
-            } finally {
-                this.isProcessing = false;
-                requestAnimationFrame(processFrame);
+            const now = Date.now();
+            const elapsed = now - this.lastProcessTime;
+
+            // Обновление счетчика FPS
+            if (now - this.lastFpsUpdate > 1000) {
+                this.fps = this.fpsCounter;
+                this.fpsCounter = 0;
+                this.lastFpsUpdate = now;
             }
+
+            // Пропуск кадра, если не прошло достаточно времени
+            if (elapsed < this.frameInterval) {
+                requestAnimationFrame(processFrame);
+                return;
+            }
+
+            if (!this.isProcessing) {
+                this.isProcessing = true;
+                try {
+                    await this.processSingleFrame();
+                    this.fpsCounter++;
+                } catch (err) {
+                    console.error('Frame processing error:', err);
+                } finally {
+                    this.isProcessing = false;
+                    this.lastProcessTime = Date.now();
+                }
+            }
+
+            requestAnimationFrame(processFrame);
         };
         processFrame();
     }
@@ -67,9 +95,16 @@ class WebcamDetector {
         // Захват кадра
         this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
 
+        // Создание уменьшенной версии для передачи
+        const smallCanvas = document.createElement('canvas');
+        smallCanvas.width = 320;
+        smallCanvas.height = 240;
+        const smallCtx = smallCanvas.getContext('2d');
+        smallCtx.drawImage(this.canvas, 0, 0, smallCanvas.width, smallCanvas.height);
+
         // Отправка на сервер
         const blob = await new Promise(resolve =>
-            this.canvas.toBlob(resolve, 'image/jpeg', 0.7));
+            smallCanvas.toBlob(resolve, 'image/jpeg', 0.7));
 
         const formData = new FormData();
         formData.append('frame', blob);
@@ -81,40 +116,78 @@ class WebcamDetector {
             });
 
             if (response.ok) {
-                const { detections } = await response.json();
-                this.drawResults(detections);
+                const data = await response.json();
+                console.log("Server response:", data); // Логирование ответа сервера
+
+                if (data.error) {
+                    console.error('Server error:', data.error);
+                    this.infoElement.textContent = 'Ошибка обработки';
+                    this.infoElement.style.color = '#FF0000';
+                } else {
+                    this.drawResults(data.final_detections);
+                }
             }
         } catch (err) {
-            console.error('Server error:', err);
+            console.error('Network error:', err);
+            this.infoElement.textContent = 'Ошибка сети';
+            this.infoElement.style.color = '#FF0000';
         }
     }
 
     drawResults(detections = []) {
+        console.log("Detections to draw:", detections); // Логирование детекций
+
         // Очистка предыдущих результатов
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
+
+        let shipCount = 0;
 
         // Рисование новых детекций
         detections.forEach(det => {
+            // Проверяем наличие необходимых полей
+            if (!det.xmin || !det.ymin || !det.xmax || !det.ymax) {
+                console.warn("Invalid detection:", det);
+                return;
+            }
+
             const x = det.xmin * this.canvas.width;
             const y = det.ymin * this.canvas.height;
             const w = (det.xmax - det.xmin) * this.canvas.width;
             const h = (det.ymax - det.ymin) * this.canvas.height;
 
             // Бокс
-            this.ctx.strokeStyle = '#00FF00';
-            this.ctx.lineWidth = 8;
+            const color = det.model === 'fog' ? '#00FF00' : '#FF0000';
+            this.ctx.strokeStyle = color;
+            this.ctx.lineWidth = 2;
             this.ctx.strokeRect(x, y, w, h);
 
             // Подпись
-            this.ctx.fillStyle = '#00FF00';
-            this.ctx.font = '14px Arial';
-            this.ctx.fillText(`${det.confidence.toFixed(1)}%`, x + 5, y + 15);
+            this.ctx.fillStyle = color;
+            this.ctx.font = 'bold 14px Arial';
+
+            // Формируем текст подписи
+            let labelText = `${det.confidence.toFixed(1)}%`;
+            if (det.class) labelText += ` ${det.class}`;
+            if (det.model) labelText += ` (${det.model})`;
+
+            this.ctx.fillText(labelText, x + 5, y + 15);
+
+            shipCount++;
         });
 
         // Обновление статуса
-        this.infoElement.textContent = detections.length
-            ? `Обнаружено судов: ${detections.length}`
-            : 'Судов не обнаружено';
+        let statusText = 'Судов не обнаружено';
+        let statusColor = '#FF0000';
+
+        if (shipCount > 0) {
+            statusText = `Обнаружено судов: ${shipCount}`;
+            statusColor = '#00FF00';
+        }
+
+        statusText += ` | ${this.fps} FPS`;
+        this.infoElement.textContent = statusText;
+        this.infoElement.style.color = statusColor;
     }
 
     stopDetection() {
@@ -124,8 +197,8 @@ class WebcamDetector {
         }
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.infoElement.textContent = 'Камера отключена';
+        this.infoElement.style.color = '#000000';
     }
 }
 
-// Инициализация
 document.addEventListener('DOMContentLoaded', () => new WebcamDetector());

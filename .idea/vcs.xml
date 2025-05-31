@@ -2,5 +2,8 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ARCH_list/MPRNet" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ARCH_list/TransWeather" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ARCH_list/attentive-gan-derainnet" vcs="Git" />
   </component>
 </project>

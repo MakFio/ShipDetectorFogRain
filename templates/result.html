@@ -4,6 +4,7 @@
     <title>Результаты анализа</title>
     <link rel="stylesheet" href="/static/styles.css">
     <style>
+        /* Основные стили остаются прежними */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -18,6 +19,55 @@
             color: white;
             font-size: 1.5rem;
         }
+        .media-comparison {
+            display: flex;
+            gap: 2rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        .media-group {
+            flex: 1;
+            min-width: 300px;
+        }
+        .media-player, .media-image {
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+        }
+        .download-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+
+        /* ИЗМЕНЕНИЯ: Добавлены стили для текста */
+        .result-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            color: #333;  /* Темный цвет текста */
+            border: 1px solid #dee2e6;  /* Граница для контраста */
+        }
+
+        .result-info p {
+            margin: 0.5rem 0;
+            color: #212529;  /* Еще более темный цвет для параграфов */
+            font-size: 1.1rem;
+        }
+
+        /* Новый контейнер для лучшего выравнивания */
+        .video-result-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -30,53 +80,84 @@
         <h1>Обнаружено судов: <span class="ship-count">{{ count }}</span></h1>
 
         <div class="media-comparison">
-    {% if file_type == 'video' %}
-        <!-- Исходное видео -->
-        <div class="media-group">
-            <h3>Исходное видео</h3>
-            <video controls class="media-player">
-                <source src="{{ url_for('serve_upload', filename=original_filename) }}"
-                        type="video/{{ original_ext }}">
-                Ваш браузер не поддерживает видео
-            </video>
-        </div>
+            <!-- Исходный файл -->
+            <div class="media-group">
+                <h3>Исходный файл</h3>
+                {% if file_type == 'gif' %}
+                    <img src="{{ url_for('serve_upload', filename=original_filename) }}"
+                         class="media-image"
+                         alt="Original GIF"
+                         onclick="restartGif(this)">
+                {% elif is_video %}
+                    <video controls class="media-player">
+                        <source src="{{ url_for('serve_upload', filename=original_filename) }}"
+                                type="{{ mime_type }}">
+                        Ваш браузер не поддерживает видео
+                    </video>
+                {% else %}
+                    <img src="{{ url_for('serve_upload', filename=original_filename) }}"
+                         class="media-image"
+                         alt="Original content">
+                {% endif %}
+            </div>
 
-        <!-- Блок с результатом -->
-        <div class="media-group">
-            <h3>Результат обработки</h3>
-            <div class="download-section">
-                <p>Видео успешно обработано!</p>
-                <p>Обнаружено судов: {{ count }}</p>
-                <a href="{{ url_for('serve_export', filename=processed_filename) }}"
-                   class="download-button" download>
-                   Скачать обработанное видео
-                </a>
+            <!-- Результат обработки -->
+            <div class="media-group">
+                <h3>Результат обработки</h3>
+                <div class="processing-result">
+                    {% if file_type == 'gif' %}
+                        <img src="{{ url_for('serve_export', filename=processed_filename) }}?v={{ timestamp }}"
+                             class="media-image"
+                             alt="Processed GIF"
+                             onclick="restartGif(this)">
+                        <div class="download-section">
+                            <a href="{{ url_for('serve_export', filename=processed_filename) }}"
+                               class="download-button"
+                               download>
+                               Скачать GIF
+                            </a>
+                        </div>
+
+                    {% elif is_video %}
+                        <!-- ИЗМЕНЕНИЕ: Добавлен контейнер и улучшен текст -->
+                        <div class="video-result-container">
+                            <div class="result-info">
+                                <p>✅ Видео успешно обработано!</p>
+                                <p>Нажмите кнопку ниже, чтобы скачать результат</p>
+                            </div>
+                            <div class="download-section">
+                                <a href="{{ url_for('serve_export', filename=processed_filename) }}"
+                                   class="download-button"
+                                   download>
+                                   Скачать видео (MP4)
+                                </a>
+                            </div>
+                        </div>
+
+                    {% else %}
+                        <img src="{{ url_for('serve_export', filename=processed_filename) }}?v={{ timestamp }}"
+                             class="media-image"
+                             alt="Processed result">
+                        <div class="download-section">
+                            <a href="{{ url_for('serve_export', filename=processed_filename) }}"
+                               class="download-button"
+                               download>
+                               Скачать изображение
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
 
-    {% elif file_type == 'gif' %}
-        <!-- Обработка GIF -->
-        <div class="media-group">
-            <h3>Исходный GIF</h3>
-            <img src="/uploads/{{ original_filename }}" class="media-image">
+        <div class="stats">
+            <h3>Статистика детекции:</h3>
+            <ul>
+                <li>Максимум судов на кадр (Fog): {{ fog_count }}</li>
+                <li>Максимум судов на кадр (COCO): {{ coco_count }}</li>
+                <li>Итоговый максимум: {{ count }}</li>
+            </ul>
         </div>
-        <div class="media-group">
-            <h3>Результат обработки</h3>
-            <img src="/exports/{{ processed_filename }}" class="media-image">
-        </div>
-
-    {% else %}
-        <!-- Обработка изображений -->
-        <div class="media-group">
-            <h3>Исходное изображение</h3>
-            <img src="/uploads/{{ original_filename }}" class="media-image">
-        </div>
-        <div class="media-group">
-            <h3>Результат обработки</h3>
-            <img src="/exports/{{ processed_filename }}" class="media-image">
-        </div>
-    {% endif %}
-</div>
 
         <div class="navigation">
             <a href="/" class="report-button">Новый анализ</a>
@@ -85,30 +166,37 @@
     </div>
 
     <script>
-        // Управление видео прогрессом
-        document.querySelectorAll('video').forEach(video => {
-            video.addEventListener('timeupdate', () => {
-                const progress = (video.currentTime / video.duration) * 100;
-                video.closest('.media-group').querySelector('progress').value = progress;
-            });
-        });
-
-        // Перезапуск GIF анимации
-        document.querySelectorAll('.media-image').forEach(img => {
-            if(img.src.toLowerCase().endsWith('.gif')) {
-                const restartGif = () => {
-                    const src = img.src;
-                    img.src = '';
-                    setTimeout(() => img.src = src, 50);
-                };
-                img.addEventListener('click', restartGif);
-                restartGif();
-            }
-        });
-
         // Показ загрузки при отправке формы
         document.querySelector('form')?.addEventListener('submit', () => {
             document.getElementById('loading').style.display = 'flex';
+        });
+
+        // Перезапуск GIF при клике
+        function restartGif(element) {
+            const src = element.src;
+            element.src = '';
+            setTimeout(() => element.src = src, 50);
+        }
+
+        // Автозапуск видео при скролле
+        const videos = document.querySelectorAll('video');
+        const options = {
+            rootMargin: '0px',
+            threshold: 0.5
+        };
+
+        const videoObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.play();
+                } else {
+                    entry.target.pause();
+                }
+            });
+        }, options);
+
+        videos.forEach(video => {
+            videoObserver.observe(video);
         });
     </script>
 </body>
