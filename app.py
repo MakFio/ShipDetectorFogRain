@@ -79,7 +79,7 @@ def apply_nms(detections: List[Dict], threshold: float = 0.5) -> List[Dict]:
 
     # Собираем отфильтрованные детекции
     if isinstance(indices, tuple):
-        indices = indices[0]  # Для старых версий OpenCV
+        indices = indices[0]
     elif len(indices) == 0:
         return []
 
@@ -448,7 +448,7 @@ def process_frame():
         processed_frame = frame
         try:
             future = executor.submit(weather_enhancer, frame)
-            processed_frame = future.result(timeout=0.2)
+            processed_frame = future.result(timeout=0.3)
         except Exception as e:
             app.logger.error(f"Enhancer error: {str(e)}")
 

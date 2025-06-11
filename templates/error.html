@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ошибка обработки</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Произошла ошибка</h1>
+        <div class="error-message">
+            <p>{{ error_message }}</p>
+            {% if error_details %}
+            <details>
+                <summary>Подробности</summary>
+                <pre>{{ error_details }}</pre>
+            </details>
+            {% endif %}
+        </div>
+        <a href="/" class="button">Вернуться на главную</a>
+    </div>
+</body>
+</html>

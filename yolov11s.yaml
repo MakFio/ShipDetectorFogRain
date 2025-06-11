@@ -1,0 +1,13 @@
+# YOLOv11s конфигурация
+nc: 1  # Количество классов (только "ship")
+depth_multiple: 0.33  # Глубина сети
+width_multiple: 0.50  # Ширина сети
+backbone:
+  type: CSPDarknet
+  depth: 3
+  width: 0.50
+  out_indices: [2, 3, 4]
+head:
+  type: Detect
+  in_channels: [128, 256, 512]
+  num_classes: 1

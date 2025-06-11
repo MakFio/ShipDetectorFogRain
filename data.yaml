@@ -1,0 +1,6 @@
+train: ShipDataSetv2i/train/images
+val: ShipDataSetv2i/valid/images
+test: ShipDataSetv2i/test/images
+
+nc: 1
+names: ['ship']

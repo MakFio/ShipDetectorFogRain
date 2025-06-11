@@ -1,0 +1,95 @@
+
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Debug Report - 5e49d3a5-41cf-46d3-98d7-af3ec8da6dd6</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 20px; }
+                .report-header { background-color: #f0f0f0; padding: 15px; border-radius: 5px; }
+                .step { margin-bottom: 30px; border: 1px solid #ddd; padding: 15px; border-radius: 5px; }
+                .step-header { font-size: 1.2em; font-weight: bold; margin-bottom: 10px; }
+                .step-image { max-width: 100%; max-height: 600px; border: 1px solid #ccc; }
+                .step-data { background-color: #f9f9f9; padding: 10px; margin-top: 10px; border-radius: 3px; }
+                .timestamp { color: #666; font-size: 0.9em; }
+            </style>
+        </head>
+        <body>
+            <div class="report-header">
+                <h1>Debug Report</h1>
+                <p>ID: 5e49d3a5-41cf-46d3-98d7-af3ec8da6dd6</p>
+                <p>Generated at: 2025-06-05 02:34:12</p>
+            </div>
+        
+            <div class="step">
+                <div class="step-header">
+                    Step 1: Original Frame
+                    <span class="timestamp">(0.00s)</span>
+                </div>
+                <img src="step_0_Original_Frame.jpg" alt="Original Frame" class="step-image">
+                <div class="step-data">
+                    <pre>No additional data</pre>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-header">
+                    Step 2: MPRNet Enhanced
+                    <span class="timestamp">(0.14s)</span>
+                </div>
+                <img src="step_1_MPRNet_Enhanced.jpg" alt="MPRNet Enhanced" class="step-image">
+                <div class="step-data">
+                    <pre>No additional data</pre>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-header">
+                    Step 3: FogDetector Results
+                    <span class="timestamp">(1.13s)</span>
+                </div>
+                <img src="step_2_FogDetector_Results.jpg" alt="FogDetector Results" class="step-image">
+                <div class="step-data">
+                    <pre>detections: [{'xmin': 0.012056064791977406, 'ymin': 0.18736551702022552, 'xmax': 0.9799823760986328, 'ymax': 0.9999999403953552, 'confidence': 64.264976978302, 'class': 'ship'}]
+count: 1
+avg_confidence: 64.264976978302</pre>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-header">
+                    Step 4: CocoDetector Results
+                    <span class="timestamp">(1.38s)</span>
+                </div>
+                <img src="step_3_CocoDetector_Results.jpg" alt="CocoDetector Results" class="step-image">
+                <div class="step-data">
+                    <pre>detections: [{'xmin': 0.0016387939685955644, 'ymin': 0.2078446000814438, 'xmax': 0.9685306549072266, 'ymax': 0.9113072752952576, 'confidence': 43.442168831825256, 'class': 'boat'}]
+count: 1
+avg_confidence: 43.442168831825256</pre>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-header">
+                    Step 5: Model Comparison
+                    <span class="timestamp">(1.38s)</span>
+                </div>
+                <img src="step_4_Model_Comparison.jpg" alt="Model Comparison" class="step-image">
+                <div class="step-data">
+                    <pre>fog_confidence: 64.264976978302
+coco_confidence: 43.442168831825256
+selected_model: fog</pre>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-header">
+                    Step 6: Final Detection
+                    <span class="timestamp">(1.38s)</span>
+                </div>
+                <img src="step_5_Final_Detection.jpg" alt="Final Detection" class="step-image">
+                <div class="step-data">
+                    <pre>detections: [{'xmin': 0.012056064791977406, 'ymin': 0.18736551702022552, 'xmax': 0.9799823760986328, 'ymax': 0.9999999403953552, 'confidence': 64.264976978302, 'class': 'ship'}]
+count: 1</pre>
+                </div>
+            </div>
+            </body></html>

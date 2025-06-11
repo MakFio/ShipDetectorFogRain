@@ -7,7 +7,7 @@ import imageio
 
 class CocoDetector:
     def __init__(self):
-        self.model = YOLO('yolo11n.pt')
+        self.model = YOLO('yolov11n.pt')
         self.ship_class_id = 8  # boat в COCO
         self.ship_class_name = "ship"  # Добавляем имя класса
 

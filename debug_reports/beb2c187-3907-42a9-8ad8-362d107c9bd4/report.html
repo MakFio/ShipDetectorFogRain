@@ -1,0 +1,95 @@
+
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Debug Report - beb2c187-3907-42a9-8ad8-362d107c9bd4</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 20px; }
+                .report-header { background-color: #f0f0f0; padding: 15px; border-radius: 5px; }
+                .step { margin-bottom: 30px; border: 1px solid #ddd; padding: 15px; border-radius: 5px; }
+                .step-header { font-size: 1.2em; font-weight: bold; margin-bottom: 10px; }
+                .step-image { max-width: 100%; max-height: 600px; border: 1px solid #ccc; }
+                .step-data { background-color: #f9f9f9; padding: 10px; margin-top: 10px; border-radius: 3px; }
+                .timestamp { color: #666; font-size: 0.9em; }
+            </style>
+        </head>
+        <body>
+            <div class="report-header">
+                <h1>Debug Report</h1>
+                <p>ID: beb2c187-3907-42a9-8ad8-362d107c9bd4</p>
+                <p>Generated at: 2025-06-05 02:34:39</p>
+            </div>
+        
+            <div class="step">
+                <div class="step-header">
+                    Step 1: Original Frame
+                    <span class="timestamp">(0.00s)</span>
+                </div>
+                <img src="step_0_Original_Frame.jpg" alt="Original Frame" class="step-image">
+                <div class="step-data">
+                    <pre>No additional data</pre>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-header">
+                    Step 2: MPRNet Enhanced
+                    <span class="timestamp">(0.00s)</span>
+                </div>
+                <img src="step_1_MPRNet_Enhanced.jpg" alt="MPRNet Enhanced" class="step-image">
+                <div class="step-data">
+                    <pre>No additional data</pre>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-header">
+                    Step 3: FogDetector Results
+                    <span class="timestamp">(0.05s)</span>
+                </div>
+                <img src="step_2_FogDetector_Results.jpg" alt="FogDetector Results" class="step-image">
+                <div class="step-data">
+                    <pre>detections: [{'xmin': 0.4076148569583893, 'ymin': 0.4658026695251465, 'xmax': 0.5536698698997498, 'ymax': 0.5674465298652649, 'confidence': 59.43610668182373, 'class': 'ship'}, {'xmin': 0.8730190396308899, 'ymin': 0.3205639123916626, 'xmax': 0.9317432641983032, 'ymax': 0.3794715702533722, 'confidence': 41.8125182390213, 'class': 'ship'}, {'xmin': 0.8206866383552551, 'ymin': 0.3164590895175934, 'xmax': 0.9370854496955872, 'ymax': 0.3839408755302429, 'confidence': 27.781766653060913, 'class': 'ship'}]
+count: 3
+avg_confidence: 43.010130524635315</pre>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-header">
+                    Step 4: CocoDetector Results
+                    <span class="timestamp">(0.09s)</span>
+                </div>
+                <img src="step_3_CocoDetector_Results.jpg" alt="CocoDetector Results" class="step-image">
+                <div class="step-data">
+                    <pre>detections: [{'xmin': 0.4117715060710907, 'ymin': 0.3030255436897278, 'xmax': 0.5517035722732544, 'ymax': 0.5531187057495117, 'confidence': 82.78101682662964, 'class': 'boat'}, {'xmin': 0.8145967721939087, 'ymin': 0.3347192406654358, 'xmax': 0.8667182922363281, 'ymax': 0.3673534691333771, 'confidence': 39.801520109176636, 'class': 'boat'}, {'xmin': 0.8837060928344727, 'ymin': 0.32009729743003845, 'xmax': 0.9251470565795898, 'ymax': 0.36596035957336426, 'confidence': 31.424760818481445, 'class': 'boat'}]
+count: 3
+avg_confidence: 51.33576591809591</pre>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-header">
+                    Step 5: Model Comparison
+                    <span class="timestamp">(0.09s)</span>
+                </div>
+                <img src="step_4_Model_Comparison.jpg" alt="Model Comparison" class="step-image">
+                <div class="step-data">
+                    <pre>fog_confidence: 43.010130524635315
+coco_confidence: 51.33576591809591
+selected_model: coco</pre>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-header">
+                    Step 6: Final Detection
+                    <span class="timestamp">(0.09s)</span>
+                </div>
+                <img src="step_5_Final_Detection.jpg" alt="Final Detection" class="step-image">
+                <div class="step-data">
+                    <pre>detections: [{'xmin': 0.4117715060710907, 'ymin': 0.3030255436897278, 'xmax': 0.5517035722732544, 'ymax': 0.5531187057495117, 'confidence': 82.78101682662964, 'class': 'boat'}, {'xmin': 0.8145967721939087, 'ymin': 0.3347192406654358, 'xmax': 0.8667182922363281, 'ymax': 0.3673534691333771, 'confidence': 39.801520109176636, 'class': 'boat'}, {'xmin': 0.8837060928344727, 'ymin': 0.32009729743003845, 'xmax': 0.9251470565795898, 'ymax': 0.36596035957336426, 'confidence': 31.424760818481445, 'class': 'boat'}]
+count: 3</pre>
+                </div>
+            </div>
+            </body></html>

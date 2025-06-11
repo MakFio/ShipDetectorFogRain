@@ -1,0 +1,3 @@
+model_path: preprocessing/weights/model_denoising.pth
+input_size: [512, 512]
+architecture: Denoising.MPRNet
