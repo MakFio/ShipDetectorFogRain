@@ -9,4 +9,5 @@
 
 ## Установка зависимостей
 ```pip install -r requirements.txt```
+
 ```pip install torch==2.7.0+cu118 torchvision==0.22.0+cu118 --extra-index-url https://download.pytorch.org/whl/cu118```
