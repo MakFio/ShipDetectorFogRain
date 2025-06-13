@@ -12,5 +12,5 @@
 
 ```pip install torch==2.7.0+cu118 torchvision==0.22.0+cu118 --extra-index-url https://download.pytorch.org/whl/cu118```
 
-## Набор данных на котором сравнивались метрики YOLOv8 Nano, YOLOv11 Nano и YOLOv11 Small.
+##### Набор данных на котором сравнивались метрики YOLOv8 Nano, YOLOv11 Nano и YOLOv11 Small.
 Скачать можно по [ссылке](https://drive.google.com/drive/folders/1SOdunN5X9bArS1E4T2Wyx0GY6zWXdE-V)
