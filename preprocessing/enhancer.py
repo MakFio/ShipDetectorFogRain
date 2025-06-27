@@ -44,11 +44,9 @@ class WeatherEnhancer:
             with open(config_path) as f:
                 cfg = yaml.safe_load(f)
 
-                # Динамический импорт модели
                 ModelClass = self._import_model(cfg['architecture'])
                 model = ModelClass().to(self.device)
 
-                # Загрузка весов
                 checkpoint = torch.load(cfg['model_path'], map_location=self.device)
                 state_dict = self._process_checkpoint(checkpoint)
 
@@ -65,7 +63,6 @@ class WeatherEnhancer:
 
     def _process_checkpoint(self, checkpoint: Dict) -> Dict:
         """Обработка различных форматов checkpoint"""
-        # Извлечение вложенного state_dict
         if 'state_dict' in checkpoint:
             state_dict = checkpoint['state_dict']
         elif 'model' in checkpoint:
@@ -77,7 +74,6 @@ class WeatherEnhancer:
         return {k.replace('module.', ''): v for k, v in state_dict.items()}
 
     def _import_model(self, model_path: str) -> torch.nn.Module:
-        """Динамический импорт архитектуры модели"""
         try:
             if model_path == "Deraining.MPRNet":
                 from Deraining.MPRNet import MPRNet
@@ -113,15 +109,12 @@ class WeatherEnhancer:
         if artifact_type == 'none':
             return image
 
-        # Подготовка изображения
         padded = self._pad_image(image)
         tensor = self._image_to_tensor(padded)
 
-        # Обработка моделью
         with torch.no_grad():
             output = self._get_model_output(artifact_type, tensor)
 
-        # Постобработка
         return self._tensor_to_image(output)[:original_h, :original_w]
 
     def _get_model_output(self, artifact_type: str, tensor: torch.Tensor) -> torch.Tensor:
@@ -132,7 +125,6 @@ class WeatherEnhancer:
         if isinstance(model_output, (list, tuple)):
             return model_output[-1]  # Берем финальный результат
 
-        # Для других архитектур
         return model_output
 
     def _detect_artifact(self, image: np.ndarray) -> str:
