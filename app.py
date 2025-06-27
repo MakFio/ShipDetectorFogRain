@@ -95,7 +95,7 @@ def is_inside(inner_box: Dict, outer_box: Dict, threshold: float = 0.95) -> bool
     Проверяет, содержится ли один бокс внутри другого.
     Возвращает True, если более 95% площади внутреннего бокса содержится во внешнем.
     """
-    # Рассчитываем площадь внутреннего бокса
+
     inner_area = (inner_box['xmax'] - inner_box['xmin']) * (inner_box['ymax'] - inner_box['ymin'])
 
     # Рассчитываем площадь пересечения
@@ -109,7 +109,6 @@ def is_inside(inner_box: Dict, outer_box: Dict, threshold: float = 0.95) -> bool
 
     intersection_area = (x_right - x_left) * (y_bottom - y_top)
 
-    # Проверяем, достаточно ли большая часть внутреннего бокса содержится во внешнем
     return intersection_area / inner_area > threshold
 
 
@@ -120,7 +119,6 @@ def remove_nested_detections(detections: List[Dict]) -> List[Dict]:
     if not detections:
         return []
 
-    # Сортируем по размеру площади (от больших к меньшим)
     detections_sorted = sorted(detections,
                                key=lambda d: (d['xmax'] - d['xmin']) * (d['ymax'] - d['ymin']),
                                reverse=True)
@@ -155,7 +153,6 @@ def process_frame_image(frame: np.ndarray) -> Tuple[np.ndarray, int, int, int, L
         debug_processor.start_debug_session()
         output_frame, final_detections, report_path = debug_processor.process_frame_debug(frame)
 
-        # Для упрощения вернем фиксированные значения
         return (
             output_frame,
             len(final_detections),
@@ -173,11 +170,9 @@ def process_frame_image(frame: np.ndarray) -> Tuple[np.ndarray, int, int, int, L
     fog_detections = fog_future.result()
     coco_detections = coco_future.result()
 
-    # Оптимизация детекций - удаление вложенных боксов
     fog_detections = remove_nested_detections(fog_detections)
     coco_detections = remove_nested_detections(coco_detections)
 
-    # Применяем NMS для каждой модели
     fog_detections = apply_nms(fog_detections)
     coco_detections = apply_nms(coco_detections)
 
@@ -455,19 +450,15 @@ def process_frame():
         fog_future = executor.submit(fog_detector.process_frame, processed_frame)
         coco_future = executor.submit(coco_detector.process_frame, processed_frame)
 
-        # Сохраняем исходные детекции до фильтрации
         fog_detections_raw = fog_future.result()
         coco_detections_raw = coco_future.result()
 
-        # Логирование для отладки
         app.logger.info(f"Raw Fog detections: {fog_detections_raw}")
         app.logger.info(f"Raw COCO detections: {coco_detections_raw}")
 
-        # Фильтрация только нужных классов (используем правильные имена классов)
         fog_detections = [d for d in fog_detections_raw if d.get('class') == 'ship' or d.get('name') == 'ship']
         coco_detections = [d for d in coco_detections_raw if d.get('class') == 'boat' or d.get('name') == 'boat']
 
-        # Если класс не найден, используем все детекции
         if not fog_detections:
             fog_detections = fog_detections_raw
             for d in fog_detections:
@@ -480,14 +471,11 @@ def process_frame():
         app.logger.info(f"Filtered Fog detections: {fog_detections}")
         app.logger.info(f"Filtered COCO detections: {coco_detections}")
 
-        # Объединяем все детекции от обеих моделей
         all_detections = fog_detections + coco_detections
 
-        # Оптимизация детекций для API
         all_detections = remove_nested_detections(all_detections)
         all_detections = apply_nms(all_detections)
 
-        # Добавляем информацию о модели в детекции
         for det in all_detections:
             det['model'] = 'fog' if det in fog_detections else 'coco'
             if 'class' not in det:
