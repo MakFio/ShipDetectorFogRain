@@ -117,7 +117,7 @@ class WebcamDetector {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log("Server response:", data); // Логирование ответа сервера
+                console.log("Server response:", data);
 
                 if (data.error) {
                     console.error('Server error:', data.error);
@@ -135,7 +135,7 @@ class WebcamDetector {
     }
 
     drawResults(detections = []) {
-        console.log("Detections to draw:", detections); // Логирование детекций
+        console.log("Detections to draw:", detections);
 
         // Очистка предыдущих результатов
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -143,9 +143,7 @@ class WebcamDetector {
 
         let shipCount = 0;
 
-        // Рисование новых детекций
         detections.forEach(det => {
-            // Проверяем наличие необходимых полей
             if (!det.xmin || !det.ymin || !det.xmax || !det.ymax) {
                 console.warn("Invalid detection:", det);
                 return;
@@ -156,17 +154,14 @@ class WebcamDetector {
             const w = (det.xmax - det.xmin) * this.canvas.width;
             const h = (det.ymax - det.ymin) * this.canvas.height;
 
-            // Бокс
             const color = det.model === 'fog' ? '#00FF00' : '#FF0000';
             this.ctx.strokeStyle = color;
             this.ctx.lineWidth = 2;
             this.ctx.strokeRect(x, y, w, h);
 
-            // Подпись
             this.ctx.fillStyle = color;
             this.ctx.font = 'bold 14px Arial';
 
-            // Формируем текст подписи
             let labelText = `${det.confidence.toFixed(1)}%`;
             if (det.class) labelText += ` ${det.class}`;
             if (det.model) labelText += ` (${det.model})`;
